@@ -1,3 +1,6 @@
+# FLASK_APP=app.py flask run
+# python3 -m flask run
+
 from flask import Flask, jsonify, request
 from googleForm import GoogleForm
 import concurrent.futures

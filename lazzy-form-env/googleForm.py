@@ -1,5 +1,3 @@
-# python3 -m flask run
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time

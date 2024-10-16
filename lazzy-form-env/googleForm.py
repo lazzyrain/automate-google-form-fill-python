@@ -115,7 +115,7 @@ class GoogleForm:
         print('=====================\n')
         return self.listInputForm
 
-    def filling(self, url: str, data: any, count: int):
+    def filling(self, url: str, data: any):
         start_time = time.time()
         driver = self.__setup(url)
         self.currentJob = 1
@@ -134,7 +134,7 @@ class GoogleForm:
                 try:
                     WebDriverWait(containerInputForm[idx], 10).until(
                         EC.visibility_of_element_located((By.XPATH, './/*[@class="whsOnd zHQkBf"]'))
-                    ).send_keys(f'{inputAnswer} ({count})')
+                    ).send_keys(f'{inputAnswer})')
                 except Exception as e:
                     pass
 
@@ -174,7 +174,6 @@ class GoogleForm:
             EC.element_to_be_clickable((By.XPATH, '//*[@class="c2gzEf"]/a'))
         ).click()
         print(f'Button next form clicked ({currentJob})')
-        count += 1;
         self.__teardown(driver)
         end_time = time.time()
         elapsed_time = end_time - start_time

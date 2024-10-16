@@ -1,0 +1,48 @@
+def filling(self, url: str, data: any, count: int):
+    driver = self.__setup(url)
+    currentJob = self.currentJob
+    self.currentJob += 1
+    time.sleep(1.5)
+    containerInputForm = driver.find_elements(by=By.CLASS_NAME, value='Qr7Oae')
+    for idx, inputForm in enumerate(data):
+        time.sleep(0.5)
+        inputAnswer = inputForm['answer']
+
+        if inputForm['type'] == 'text':
+            try:
+                # containerInputForm[idx].find_element(by=By.XPATH, value='.//*[@class="whsOnd zHQkBf"]').send_keys(f'{inputAnswer} ({count})')
+                WebDriverWait(containerInputForm[idx], 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]'))
+                )
+            except Exception as e:
+                pass
+
+        if inputForm['type'] == 'radio':
+            try:
+                containerInputForm[idx].find_element(by=By.XPATH, value=f'.//*[contains(@class, "Od2TWd") and not(contains(@aria-disabled, "true")) and @data-value="{inputAnswer}"]').click()
+            except Exception as e:
+                pass
+
+        if inputForm['type'] == 'dropdown':
+            try:
+                containerInputForm[idx].find_element(by=By.XPATH, value='.//*[contains(@role, "listbox")]').click()
+                time.sleep(1)
+                containerInputForm[idx].find_element(by=By.XPATH, value=f'.//div[@role="option" and @data-value="{inputAnswer}"]/span').click()
+            except Exception as e:
+                pass
+
+        if inputForm['type'] == 'checkbox':
+            try:
+                containerInputForm[idx].find_element(by=By.XPATH, value=f'.//*[contains(@class, "uVccjd") and @data-answer-value="{inputAnswer}"]').click()
+            except Exception as e:
+                pass
+
+    driver.find_element(by=By.XPATH, value='//div[@role="button" and @aria-label="Submit"]/span/span').click()
+    print(f'Submit button clicked! ({currentJob})')
+
+    time.sleep(0.5)
+    driver.find_element(by=By.XPATH, value='//*[@class="c2gzEf"]/a').click()
+    print(f'Next answer button clicked!')
+    self.__teardown(driver)
+    return f'Form {currentJob} completed'
+

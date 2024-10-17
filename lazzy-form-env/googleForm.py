@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 class GoogleForm:
     def __init__(self):
         self.listInputForm = []
-        self.currentJob = 1
         pass
     
     def __setup(self, url):
@@ -95,7 +94,6 @@ class GoogleForm:
                 pass
 
     def identify(self, url: str):
-        self.currentJob = 1
         driver = self.__setup(url)
         self.listInputForm = []
         print('🔍 Identifying Form...')
@@ -115,17 +113,14 @@ class GoogleForm:
         print('=====================\n')
         return self.listInputForm
 
-    def filling(self, url: str, data: any):
+    def filling(self, url: str, data: any, count: any):
         start_time = time.time()
         driver = self.__setup(url)
-        self.currentJob = 1
-        currentJob = self.currentJob
-        self.currentJob += 1
-        print(f'Finding form - ({currentJob})')
+        print(f'Finding form - ({count})')
         containerInputForm = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CLASS_NAME, 'Qr7Oae'))
         )
-        print(f'Form founded, start fill ({currentJob})')
+        print(f'Form founded, start fill ({count})')
         for idx, inputForm in enumerate(data):
             time.sleep(0.5)
             inputAnswer = inputForm['answer']
@@ -134,7 +129,7 @@ class GoogleForm:
                 try:
                     WebDriverWait(containerInputForm[idx], 10).until(
                         EC.visibility_of_element_located((By.XPATH, './/*[@class="whsOnd zHQkBf"]'))
-                    ).send_keys(f'{inputAnswer})')
+                    ).send_keys(f'{inputAnswer}')
                 except Exception as e:
                     pass
 
@@ -168,15 +163,15 @@ class GoogleForm:
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//div[@role="button" and @aria-label="Submit"]/span/span'))
         ).click()
-        print(f'Submited form ({currentJob})')
+        print(f'Submited form ({count})')
 
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@class="c2gzEf"]/a'))
         ).click()
-        print(f'Button next form clicked ({currentJob})')
+        print(f'Button next form clicked ({count})')
         self.__teardown(driver)
         end_time = time.time()
         elapsed_time = end_time - start_time
-        result = f'Form filled ({currentJob}): {elapsed_time:.2f} seconds'
+        result = f'Form filled ({count}): {elapsed_time:.2f} seconds'
         print(result)
         return result

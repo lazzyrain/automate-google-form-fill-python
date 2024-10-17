@@ -38,13 +38,16 @@ def createApp():
         # response = gform.filling(url=url, data=data, count=int(count))
         # return sendRespond(200, 'Form selesai diisi', response)
 
-        def filling_task():
-            return gform.filling(url=url, data=data)
+        def filling_task(indexCount):
+            print(f'Running generate ({indexCount})')
+            resultFill = gform.filling(url=url, data=data, count=indexCount)
+            indexCount += 1
+            return resultFill
 
         results = []
         start_time = time.time()
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(filling_task) for _ in range(int(count))]
+            futures = {executor.submit(filling_task, i): i for i in range(int(count))}
             for future in concurrent.futures.as_completed(futures):
                 end_time = time.time()
                 try:
@@ -53,17 +56,18 @@ def createApp():
                 except Exception as e:
                     results.append(str(e))
         elapsed_time = end_time - start_time
-        return sendRespond(200, f'Form filled: {elapsed_time:.2f} seconds', results)
+
+        return sendRespond(200, f'Berhasil melakukan pengisian: {elapsed_time:.2f} detik', [results, [data]])
 
     @app.post('/form-fill-generate')
     def formFillGenerate():
         jsonData = request.json
         url = jsonData.get('url')
         data = jsonData.get('data')
-        
+
         def filling_task(indexCount):
             print(f'Running generate ({indexCount})')
-            resultFill = gform.filling(url=url, data=data[indexCount])
+            resultFill = gform.filling(url=url, data=data[indexCount], count=indexCount)
             indexCount += 1
             return resultFill
 
@@ -80,7 +84,7 @@ def createApp():
                     results.append(str(e))
         elapsed_time = end_time - start_time
 
-        return sendRespond(200, f'Form filled generate: {elapsed_time:.2f} seconds', [results, data])
+        return sendRespond(200, f'Berhasil melakukan pengisian (Generated): {elapsed_time:.2f} detik', [results, data])
 
     return app
 
